@@ -1,0 +1,77 @@
+# ===== 机密与本地数据（绝对不能提交）=====
+.env
+.env.*
+*.key
+*.pem
+secrets.json
+*.sqlite
+*.db
+
+# ===== C / C++（Dev-C++、CLion、gcc）=====
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.gch
+*.pch
+*.dSYM/
+Makefile.win
+*.dev
+*.layout
+build/
+cmake-build-*/
+
+# ===== Java（IDEA / javac）=====
+*.class
+*.jar
+*.war
+target/
+out/
+.gradle/
+hs_err_pid*
+replay_pid*
+
+# ===== Python（PyCharm / Anaconda）=====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+dist/
+
+# ===== IDE / 编辑器 =====
+.idea/
+.vscode/
+.vs/
+*.iml
+*.swp
+*.swo
+*~
+.settings/
+.project
+.classpath
+
+# ===== 操作系统垃圾 =====
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ===== 大文件（GitHub 单文件上限 100MB）=====
+*.zip
+*.7z
+*.rar
+*.iso
+*.psd
+*.mp4
+data/
+datasets/
