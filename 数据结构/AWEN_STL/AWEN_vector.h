@@ -4,6 +4,7 @@
 
 #include<cstddef>
 #include <stdexcept>
+#include <initializer_list>
 namespace AWEN {
 template<typename T>
 class vector
@@ -239,6 +240,166 @@ public:
 		}
 
 		size_ = new_size;
+	}
+	T* insert(const T* pos, const T& value)
+	{
+		// 先保存下标，扩容后原来的 pos 可能失效
+		std::size_t index =
+			size_ == 0
+			? 0
+			: static_cast<std::size_t>(pos - data_);
+
+		if (index > size_)
+		{
+			throw std::out_of_range("AWEN::vector::insert");
+		}
+
+		// 防止 value 引用容器内部的元素
+		T saved_value = value;
+
+		// 增加一个元素，并在需要时扩容
+		push_back(saved_value);
+
+		// 从后往前移动，腾出插入位置
+		for (std::size_t i = size_ - 1; i > index; --i)
+		{
+			data_[i] = data_[i - 1];
+		}
+
+		data_[index] = saved_value;
+
+		return data_ + index;
+	}
+	T* erase(const T* pos)
+	{
+		if (empty())
+		{
+			throw std::out_of_range("AWEN::vector::erase");
+		}
+
+		std::size_t index =
+			static_cast<std::size_t>(pos - data_);
+
+		if (index >= size_)
+		{
+			throw std::out_of_range("AWEN::vector::erase");
+		}
+
+		// 从前往后移动，覆盖被删除的位置
+		for (std::size_t i = index; i + 1 < size_; ++i)
+		{
+			data_[i] = data_[i + 1];
+		}
+
+		--size_;
+
+		return data_ + index;
+	}
+	void shrink_to_fit()
+	{
+		// 空容器：释放全部空间
+		if (size_ == 0)
+		{
+			delete[] data_;
+			data_ = nullptr;
+			capacity_ = 0;
+			return;
+		}
+
+		// 容量已经等于元素数量
+		if (size_ == capacity_)
+		{
+			return;
+		}
+
+		T* new_data = new T[size_]{};
+
+		try
+		{
+			for (std::size_t i = 0; i < size_; ++i)
+			{
+				new_data[i] = data_[i];
+			}
+		}
+		catch (...)
+		{
+			delete[] new_data;
+			throw;
+		}
+
+		delete[] data_;
+		data_ = new_data;
+		capacity_ = size_;
+	}
+	vector(std::initializer_list<T> init)
+		: data_(init.size() == 0
+			? nullptr
+			: new T[init.size()]{}),
+		size_(init.size()),
+		capacity_(init.size())
+	{
+		try
+		{
+			std::size_t index = 0;
+
+			for (const T& value : init)
+			{
+				data_[index] = value;
+				++index;
+			}
+		}
+		catch (...)
+		{
+			delete[] data_;
+			throw;
+		}
+	}
+	T& front()
+	{
+		if (size_ == 0)
+		{
+			throw std::out_of_range("vector::front: empty vector");
+		}
+
+		return data_[0];
+	}
+
+	const T& front() const
+	{
+		if (size_ == 0)
+		{
+			throw std::out_of_range("vector::front: empty vector");
+		}
+
+		return data_[0];
+	}
+
+	T& back()
+	{
+		if (size_ == 0)
+		{
+			throw std::out_of_range("vector::back: empty vector");
+		}
+
+		return data_[size_ - 1];
+	}
+
+	const T& back() const
+	{
+		if (size_ == 0)
+		{
+			throw std::out_of_range("vector::back: empty vector");
+		}
+
+		return data_[size_ - 1];
+	}
+	T* data noexcept()
+	{
+		return data_;
+	}
+	const T* data() const noexcept
+	{
+		return data_ const;
 	}
 };
 
