@@ -25,7 +25,20 @@ namespace AWEN
         // 哨兵不保存元素，也不计入 size_
         NodeBase sentinel_;
         std::size_t size_ = 0;
+        //删除节点函数
+        void erase_node(NodeBase* node) noexcept
+        {
+            assert(node != &sentinel_);
 
+            NodeBase* previous = node->prev;
+            NodeBase* next_node = node->next;
+
+            previous->next = next_node;
+            next_node->prev = previous;
+
+            delete static_cast<Node*>(node);
+            --size_;
+        }
     public:
         // 下一步添加构造函数
         LinkList() noexcept
@@ -81,6 +94,54 @@ namespace AWEN
             sentinel_.prev = &sentinel_;
             sentinel_.next = &sentinel_;
             size_ = 0;
+        }
+        T& front() noexcept
+        {
+            assert(!empty());
+            return static_cast<Node*>(sentinel_.next)->data;
+        }
+
+        const T& front() const noexcept
+        {
+            assert(!empty());
+            return static_cast<const Node*>(sentinel_.next)->data;
+        }
+
+        T& back() noexcept
+        {
+            assert(!empty());
+            return static_cast<Node*>(sentinel_.prev)->data;
+        }
+
+        const T& back() const noexcept
+        {
+            assert(!empty());
+            return static_cast<const Node*>(sentinel_.prev)->data;
+        }
+        void push_front(const T& value)
+        {
+            Node* new_node = new Node(value);
+            NodeBase* old_head = sentinel_.next;
+
+            new_node->prev = &sentinel_;
+            new_node->next = old_head;
+
+            old_head->prev = new_node;
+            sentinel_.next = new_node;
+
+            ++size_;
+        }
+
+        void pop_front() noexcept
+        {
+            assert(!empty());
+            erase_node(sentinel_.next);
+        }
+
+        void pop_back() noexcept
+        {
+            assert(!empty());
+            erase_node(sentinel_.prev);
         }
     };
 }
